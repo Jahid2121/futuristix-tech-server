@@ -31,22 +31,43 @@ async function run() {
     const database = client.db('productDB')
     const productCollection = database.collection('products')
 
-    app.get('/products', async(req,res) => {
+    app.get('/products', async (req, res) => {
       const cursor = productCollection.find()
       const result = await cursor.toArray()
       res.send(result)
     })
 
-    app.get('/products/:id', async(req, res) => {
-      const id = req.params.id 
-      const query = {_id: new ObjectId(id)}
+    app.put('/products/:id', async (req, res) => {
+      const id = req.params.id
+      const filter = { _id: new ObjectId(id) }
+      const options = { upsert: true }
+      const updatedProduct = req.body
+      const product = {
+        $set: {
+          productName: updatedProduct.productName,
+          price: updatedProduct.price,
+          brandName: updatedProduct.brandName,
+          description: updatedProduct.description,
+          image: updatedProduct.image,
+          ratings: updatedProduct.ratings,
+          type: updatedProduct.type
+        }
+      }
+
+      const result = await productCollection.updateOne(filter, product, options )
+      res.send(result)
+    })
+
+    app.get('/products/:id', async (req, res) => {
+      const id = req.params.id
+      const query = { _id: new ObjectId(id) }
       const result = await productCollection.findOne(query)
       res.send(result)
     })
 
 
-    app.post('/products', async(req, res) => {
-      const newProduct = req.body 
+    app.post('/products', async (req, res) => {
+      const newProduct = req.body
       const result = await productCollection.insertOne(newProduct)
       res.send(result)
     })
@@ -69,10 +90,10 @@ run().catch(console.dir);
 
 
 
-app.get('/', (req,res) => {
-    res.send('TECH WEBSITE SERVER IS RUNNING')
+app.get('/', (req, res) => {
+  res.send('TECH WEBSITE SERVER IS RUNNING')
 })
 
 app.listen(port, () => {
-    console.log(`APP IS RUNNING ON port: ${port}`);
+  console.log(`APP IS RUNNING ON port: ${port}`);
 })
