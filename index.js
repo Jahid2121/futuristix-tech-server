@@ -1,9 +1,10 @@
-const express = require('express');
-const cors = require('cors');
 require('dotenv').config()
-const app = express()
-const port = process.env.PORT || 5000;
+const express = require('express');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+const port = process.env.PORT || 5000;
+
+const app = express()
+const cors = require('cors');
 
 
 // middleware
@@ -26,7 +27,6 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
 
     const database = client.db('productDB')
     const productCollection = database.collection('products')
